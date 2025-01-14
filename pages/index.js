@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useTimer } from "@/context/timer-context";
 
+
 const Home = () => {
   const router = useRouter();
   const currentId = router.query.id;
@@ -45,6 +46,8 @@ const Home = () => {
         </button>
       </div>
       <div className="flex mt-8">{buttons}</div>
+
+   
     </div>
   );
 };

@@ -84,6 +84,7 @@ const Lesson = () => {
       </h1>
       <p className="text-xl">{currentLesson?.description || "載入中..."}</p>
       <div className="text-xl mt-4">倒數時間：{timeLeft} 秒</div>
+
       <div className="flex mt-4">
         <button
           className="px-4 py-2 m-2 bg-green-500 text-white rounded"
@@ -111,6 +112,7 @@ const Lesson = () => {
       >
         返回首頁
       </button>
+
     </div>
   );
 };
