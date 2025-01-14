@@ -7,13 +7,15 @@ import Link from "next/link";
 const Lesson = () => {
   const { timeLeft, addTime, reset } = useTimer();
   const router = useRouter();
-  const { id } = router.query;
-  const [lessonData, setLessonData] = useState(null);
+  const  {lid} = router.query;
+  const [lessonData, setLessonData] = useState([]);
+  const [currentLesson, setCurrentLesson] = useState(null);
   const [isAlerting, setIsAlerting] = useState(false);
 
+
   useEffect(() => {
-    if (!id) return;
-    console.log(`恩人，終於來到第${id}課`);
+    if (!router.isReady) return console.log('what!');
+    console.log(`恩人，終於來到第${lid}課`);
 
     // 模擬從假資料 API 中取得資料
     const fetchData = async () => {
@@ -21,8 +23,22 @@ const Lesson = () => {
           const res = await fetch("/api/lessons");
           if (!res.ok) throw new Error("API Error");
           const data = await res.json();
-          const currentLesson = data.find((lesson) => lesson.lid === parseInt(id));
-          setLessonData(currentLesson);
+          
+          setLessonData(data);
+          console.log(data);
+        
+        const lesson = data.find((lesson) => lesson.lid === parseInt(lid));
+        console.log('現在',lesson);
+        console.log(lid);
+        console.log(router.query);
+
+
+        if (!lesson) {
+          setCurrentLesson({ description: "找不到對應的課程資料" });
+        } else {
+          setCurrentLesson(lesson);
+          console.log('現在',lesson);
+        }
         } catch (err) {
           console.error(err);
           setLessonData({ description: "無法載入資料" });
@@ -31,7 +47,7 @@ const Lesson = () => {
     
 
     fetchData();
-  }, [id]);
+  }, [router.isReady, lid]);
 
   useEffect(() => {
     if (timeLeft === 0 && !isAlerting) {
@@ -48,25 +64,25 @@ const Lesson = () => {
       });
     }
   }, [timeLeft, isAlerting, reset]);
-
-  const buttons = [1, 2, 3, 4, 5].map((lid) => (
+// console.log(lessonData)
+  const buttons = lessonData.map((lesson) => (
     <button
-      key={lid}
-      disabled={String(lid) === id}
+      key={lesson.lid}
+      disabled={String(lesson.lid) === lid}
       className={`px-4 py-2 m-2 ${
-        String(lid) === id ? "bg-gray-400" : "bg-blue-500"
+        String(lesson.lid) === lid ? "bg-gray-400" : "bg-blue-500"
       } text-white rounded`}
     >
-      <Link href={`/lesson/${lid}`}>Lesson {lid}</Link>
+      <Link href={`/lesson/${lesson.lid}`}>Lesson {lesson.lid}</Link>
     </button>
   ));
 
   return (
     <div className="flex flex-col justify-center items-center h-screen">
       <h1 className="text-2xl mb-4">
-        歡迎，這是第{id}課
+        歡迎，這是第{lid}課
       </h1>
-      <p className="text-xl">{lessonData?.description || "載入中..."}</p>
+      <p className="text-xl">{currentLesson?.description || "載入中..."}</p>
       <div className="text-xl mt-4">倒數時間：{timeLeft} 秒</div>
       <div className="flex mt-4">
         <button
