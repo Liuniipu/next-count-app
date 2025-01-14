@@ -1,5 +1,6 @@
 import { useEffect, useReducer } from "react";
 
+// 以reducer將預選的方案列出
 const timerReducer = (state, action) => {
   switch (action.type) {
     case "TICK":
@@ -15,13 +16,15 @@ const timerReducer = (state, action) => {
   }
 };
 
+// 預設時間
 const useCountdownTimer = (defaultTime=300) => {
   const [state, dispatch] = useReducer(timerReducer, {
     defaultTime,
     timeLeft: defaultTime,
   });
 
-  // 初始化從 localStorage 獲取計時器狀態
+  // 為了關閉視窗後持續運行，將其存至localstorage
+  // 初次從 localStorage 獲取計時器狀態
   useEffect(() => {
     const savedTimeLeft = parseInt(localStorage.getItem("timeLeft"), 10);
     const savedTimestamp = parseInt(localStorage.getItem("timestamp"), 10);
@@ -49,7 +52,7 @@ const useCountdownTimer = (defaultTime=300) => {
     return () => clearInterval(timer);
   }, []);
 
-// 重置計時器並不受 localStorage 影響
+// 確保重置計時器不受 localStorage 影響
 const reset = () => {
   dispatch({ type: "RESET" });
   localStorage.setItem("timeLeft", defaultTime);
